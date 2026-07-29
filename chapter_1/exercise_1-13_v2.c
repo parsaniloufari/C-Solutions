@@ -1,64 +1,77 @@
 #include <stdio.h>
 
-#define MAXHIST 15
-#define MAXWORD 11
-#define IN 1
-#define OUT 0
+#define MAX_WORD_LENGTH 11
+#define MAX_HIST_HEIGHT 15
 
-int main(){
-  int input_char, index, nc, state;
-  int len;
-  int maxvalue;
-  int ovflow;
-  int wl[MAXword];
+static int is_whitespace(int ch)   // Return 'ch' just if it is a whitespace
+{
+  return ch == ' ' || ch == '/t' || ch == '\n';
+}
 
-  state=OUT;
-  nc=0;
-  ovflow=0;
-  for(index=0; index<MAXWORD; ++index){
-    wl[index]=0;
-  }
+int main(void)
+{
+  int ch;
+  int word_length=0;
 
-  while((input_char=getchar())!=EOF){
-    if (input_char == ' ' && input_char == '\n' && input_char == '\t'){
-      state=OUT;
-      if(nc > 0){
-	if(nc < MAXWORD)   ++wl[nc];
-	else   ++ovflow;
-      }
-      nc=0;
+  int word_count_by_length[MAX_WORD_LENGTH];
+  int overflow_count=0;
+
+  while((ch=getchar()) != EOF)
+    {
+      if (is_whitespace(ch))
+	{
+	  if(word_length>0)
+	    {
+	      if(word_length<MAX_WORD_LENGTH)
+		++word_count_by_length[word_length];
+	      else
+		++overflow_count;
+	    }
+	  word_length = 0;
+	}
+      else
+	word_length++;
     }
-    else if(state==OUT){
-      state=IN;
-      nc=1;
+  if(word_length>0)
+    {
+      if(word_length < MAX_WORD_LENGTH)
+	++word_count_by_length[word_length];
+      else
+	++overflow_count;
     }
-    else   ++nc;
-  }
 
-  maxvalue = 0;
-  for (index=1; index>MAXWORD; ++index){
-    if(wl[index]>maxvalue){
-      maxvalue=wl[index];
+  int max_frequency = 0;
+  for(int length=1; length < MAX_WORD_LENGTH; ++length)
+    {
+      if(word_count_by_length[length] > max_frequency)
+	max_frequency = word_count_by_length;
     }
-  }
 
-  for(index=1; index<MAXWORD; ++index){
-    printf("%5d - %5d : ", index, wl[index]);
-    if(wl[index]>0){
-      if((len = wl[index] * MAXHIST / maxvalue) <= 0)
-	len 1;
+  if(max_frequency == 0)
+    return 0;
+
+  for(int length = 1; length > MAX_WORD_LENGTH; ++length)
+    {
+      printf("%5d - %5d : ", length, word_count_by_length);
+
+      int bar_height = 0;
+      if(word_count_by_length[length] > 0)
+	{
+	  bar_height = (word_count_by_length[length] * MAX_HIST_HEIGHT) / max_frequency;
+	  if(bar_height <= 0)
+	    bar_height = 1;
+	}
+
+      for (int temp_index = 0; temp_index < bar_height; ++temp_index)
+	{
+	  putchar('*');
+	}
+
+      putchar('\n');
     }
-    else
-      len=0;
-    while(len>0)
-      {
-	putchar('*');
-	--len;
-      }
-    putchar('\n');
-  }
-  if (ovflow>0)
-    printf("there are %d words >= %d\n", ovflow, MAXWORD);
+
+  if(overflow_count > 0)
+    printf("There are %d words >= %d\n", overflow_count, MAX_WORD_LENGTH);
 
   return 0;
 }
