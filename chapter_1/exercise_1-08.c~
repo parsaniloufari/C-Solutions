@@ -1,0 +1,13 @@
+#include <stdio.h>
+
+int main(){
+  int inp_cha, blanks, tabs, newlines;
+
+  blanks = tabs = newlines = 0;
+  while((inp_cha = getchar()) != EOF){
+    if(inp_char == ' ') ++blanks;
+    if(inp_char == '\t') ++tabs;
+    if(inp_char == '\n') ++newlines;
+  }
+  return 0;
+}

@@ -1,0 +1,16 @@
+#include <stdio.h>
+
+#define IN 1
+#define OUT 0
+
+int main(){
+  int input_char, array_index, word_length_count[30], state, max;
+
+  state = OUT;
+  for ( array_index = 0; array_index < 30; array_index++)
+    word_length_count[array_index] = 0;
+  array_index = 0;
+
+  while (((input_char=getchar()) != EOF )
+	 && input_char < 30){
+    if ( input_char 
